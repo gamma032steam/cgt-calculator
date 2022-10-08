@@ -8,7 +8,7 @@ import datetime
 Holding = namedtuple("trade", "date qty orig_qty unit_price brokerage")
 Sale = namedtuple("sale", "date, qty orig_qty unit_price brokerage discounted")
 
-VERBOSE = True
+VERBOSE = False
 
 def sort_and_filter_before_date(trades, date):
     '''Inclusive.'''
@@ -30,23 +30,26 @@ def fifo(trades):
         for h in holdings:
             print(h)
 
-def calculate_cgt(cost_base, sell_price, discounted):
+def calculate_discount(cost_base, sell_price, discounted):
     # don't discount capital losses
     if not discounted or sell_price < cost_base:
-        return sell_price - cost_base 
+        return 0
     else:
         return (sell_price - cost_base) * .5
 
 def log_sell(used, trade):
     print(f'CGT for {trade}:')
     tot_cgt = 0
+    tot_discount = 0
     for t in used:
         cost_base = (t.qty * t.unit_price) + t.brokerage 
         sell_price = t.qty * trade.unit_price
-        cgt = calculate_cgt(cost_base, sell_price, t.discounted)
-        tot_cgt += cgt
+        cgt = sell_price - cost_base
+        discount = calculate_discount(cost_base, sell_price, t.discounted)
+        tot_cgt += cgt - discount
+        tot_discount += discount
         print(f'Used {t.qty} of an original {t.orig_qty} of shares from {t.date}. Cost {t.qty}*{t.unit_price} plus brokerage of {t.brokerage} for {cost_base}. Sold for {t.qty}*{trade.unit_price}={sell_price}. Gained {sell_price-cost_base}, CGT of {cgt}. Discounted: {t.discounted}')
-    print(f'Total capital gain from this sale: ${tot_cgt}')
+    print(f'Total capital gain from this sale: ${tot_cgt + tot_discount}. Discounted {tot_discount} for a final CGT of {tot_cgt}')
 
 def fifo_sell(holdings, trade):
     '''Calculates the new holdings and the consumed holdings (also using the 

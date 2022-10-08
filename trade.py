@@ -12,7 +12,7 @@ class Trade:
         self.is_drp = is_drp == "Y"
 
     def clean_money(self, n):
-        return float(n.replace("$", ""))
+        return float(n.replace("$", "").replace("AU", ""))
 
     def __str__(self):
         return f'{self.date}: {self.type} {self.qty} at ${self.unit_price} with ${self.brokerage} brokerage for ${self.price}'
