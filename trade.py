@@ -1,7 +1,7 @@
 import datetime
 
 class Trade:
-    def __init__(self, date, type, qty, price, brokerage, is_drp) -> None:
+    def __init__(self, date, type, qty, price, brokerage, is_drp=False) -> None:
         day, month, year = [int(x) for x in date.split("/")]
         self.date = datetime.date(year=year, month=month, day=day)
         self.type = type.upper()
@@ -15,4 +15,4 @@ class Trade:
         return float(n.replace("$", ""))
 
     def __str__(self):
-        return f'{self.date}: {self.type} {self.qty} at ${self.unit_price} with ${self.brokerage} brokerage for ${self.price}. Is DRP: {self.is_drp}'
+        return f'{self.date}: {self.type} {self.qty} at ${self.unit_price} with ${self.brokerage} brokerage for ${self.price}'
