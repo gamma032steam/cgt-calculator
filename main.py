@@ -1,13 +1,14 @@
 import csv
 import sys
 
-from numpy import sort
 from trade import Trade
 from collections import namedtuple
 import datetime
 
 Holding = namedtuple("trade", "date qty orig_qty unit_price brokerage")
 Sale = namedtuple("sale", "date, qty orig_qty unit_price brokerage discounted")
+
+VERBOSE = True
 
 def sort_and_filter_before_date(trades, date):
     '''Inclusive.'''
@@ -25,11 +26,16 @@ def fifo(trades):
         else:
             raise Exception(f"Unknown trade type '{t.type}'")
 
-    for h in holdings:
-        print(h)
+    if VERBOSE:
+        for h in holdings:
+            print(h)
 
 def calculate_cgt(cost_base, sell_price, discounted):
-    return (sell_price - cost_base) if not discounted else (sell_price - cost_base) * .5
+    # don't discount capital losses
+    if not discounted or sell_price < cost_base:
+        return sell_price - cost_base 
+    else:
+        return (sell_price - cost_base) * .5
 
 def log_sell(used, trade):
     print(f'CGT for {trade}:')
@@ -70,13 +76,13 @@ if __name__ == "__main__":
         trades = [Trade(*t[:6]) for t in trades]
 
         day, month, year = [int(x) for x in sys.argv[2].split("/")]
-        print(day, month, year)
         end_date = datetime.date(year=year, month=month, day=day)
         trades = sort_and_filter_before_date(trades, end_date)
 
         if len(trades) == 0:
             raise Exception("There's no trades. Did you format the csv correctly?") 
 
-        for t in trades:
-            print(t)           
+        if VERBOSE:
+            for t in trades:
+                print(t)           
         fifo(trades)

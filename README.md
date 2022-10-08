@@ -1,17 +1,17 @@
 # cgt-calculator
 CGT FIFO calculator for shares.
 - Uses the FIFO method. That is, oldest shares are sold first.
-- Applies brokerage to the cost base of the sale that sells the final unit of a purchase.
-- Applies the CGT discount.
+- Applies brokerage to the cost base of the sale that sells the final unit of a lot.
+- CGT discount aware.
 - Doesn't support multiple trades per day.
 - Probably wrong.
 
 ## Usage
 
 Requires a csv in the following format:
-| date       | type            | qty | unit-price | brokerage | is-drp (optional)                                            |
-|------------|-----------------|-----|-------|-----------|---------------------------------------------------|
-| dd/mm/yyyy | "BUY" or "SELL" | #    | price per unit | in $    | from a dividend reinvestment plan? "Y" or "N". Can leave blank. |
+| date       | type            | qty | unit-price | brokerage 
+|------------|-----------------|-----|-------|-----------|
+| dd/mm/yyyy | "BUY" or "SELL" | #    | price per unit | in $   
 
 See `example.csv` for an example.
 
